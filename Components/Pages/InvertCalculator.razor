@@ -1,0 +1,71 @@
+@page "/invert-calculator"
+
+@rendermode InteractiveServer
+
+<PageTitle>Invert Calculator</PageTitle>
+
+<h1>Invert Calculator</h1>
+
+<p>Calculate the ending invert elevation based on pipe length and slope.</p>
+
+<div class="card p-3 mb-3" style="max-width: 500px;">
+    <div class="mb-3">
+        <label class="form-label">Starting Invert (ft):</label>
+        <input type="number" class="form-control" @bind="startingInvert" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Pipe Length (ft):</label>
+        <input type="number" class="form-control" @bind="pipeLength" step="0.01" />
+    </div>
+
+<div class="mb-3">
+    <label class="form-label">Slope (%):</label>
+    <input type="number" class="form-control" @bind="slope" step="0.01" />
+    <small class="form-text text-muted">Negative = downhill, Positive = uphill</small>
+</div>
+
+    <button class="btn btn-primary" @onclick="Calculate">Calculate</button>
+</div>
+
+@if (hasCalculated)
+{
+    <div class="alert alert-success" style="max-width: 500px;">
+        <h4>Result:</h4>
+        <p><strong>Ending Invert: @endingInvert.ToString("F2") ft</strong></p>
+        <p class="mb-0"><small>Drop: @drop.ToString("F2") ft</small></p>
+    </div>
+}
+
+@code {
+    // Input variables
+    private double startingInvert = 0;
+    private double pipeLength = 0;
+    private double slope = 0;
+
+    // Output variables
+    private double endingInvert = 0;
+    private double drop = 0;
+    private bool hasCalculated = false;
+
+private void Calculate()
+{
+    // Convert slope from percentage to decimal
+    double slopeDecimal = slope / 100.0;
+    
+    // Calculate the drop (length × slope)
+    // Negative slope = downhill, Positive slope = uphill
+    drop = pipeLength * slopeDecimal;
+    
+    // Calculate ending invert
+    // For downhill (negative slope): ending invert decreases
+    // For uphill (positive slope): ending invert increases
+    endingInvert = startingInvert + drop;
+    
+    // Show the results
+    hasCalculated = true;
+    
+    // Debug line - check the terminal/console
+    Console.WriteLine($"Calculated! Ending: {endingInvert}, Drop: {drop}");
+}
+}
