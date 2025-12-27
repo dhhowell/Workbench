@@ -32,8 +32,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/ProtonDrive/My files/Dev/Workbench/Components/Pages/InvertCalculator.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbnZlcnRDYWxjdWxhdG9yLnJhem9y
+[C:/ProtonDrive/My files/Dev/Workbench/Components/Pages/Mannings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNYW5uaW5ncy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/ProtonDrive/My files/Dev/Workbench/Components/Pages/SlopeLength.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTbG9wZUxlbmd0aC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/ProtonDrive/My files/Dev/Workbench/Components/Routes.razor]

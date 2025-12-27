@@ -1,17 +1,17 @@
-@page "/invert-calculator"
+@page "/slopelength"
 
 @rendermode InteractiveServer
 
-<PageTitle>Invert Calculator</PageTitle>
+<PageTitle>Slope & Length Calculator</PageTitle>
 
-<h1>Invert Calculator</h1>
+<h1>Slope & Length Calculator</h1>
 
-<p>Calculate the ending invert elevation based on pipe length and slope.</p>
+<p>Calculate the ending elevation based on a given length and slope.</p>
 
 <div class="card p-3 mb-3" style="max-width: 500px;">
     <div class="mb-3">
-        <label class="form-label">Starting Invert (ft):</label>
-        <input type="number" class="form-control" @bind="startingInvert" step="0.01" />
+        <label class="form-label">Starting Elevation (ft):</label>
+        <input type="number" class="form-control" @bind="startingElevation" step="0.01" />
     </div>
 
     <div class="mb-3">
@@ -32,19 +32,19 @@
 {
     <div class="alert alert-success" style="max-width: 500px;">
         <h4>Result:</h4>
-        <p><strong>Ending Invert: @endingInvert.ToString("F2") ft</strong></p>
-        <p class="mb-0"><small>Drop: @drop.ToString("F2") ft</small></p>
+        <p><strong>Ending Elevation: @endingElevation.ToString("F2") ft</strong></p>
+        <p class="mb-0"><small>Change: @drop.ToString("F2") ft</small></p>
     </div>
 }
 
 @code {
     // Input variables
-    private double startingInvert = 0;
+    private double startingElevation = 0;
     private double pipeLength = 0;
     private double slope = 0;
 
     // Output variables
-    private double endingInvert = 0;
+    private double endingElevation = 0;
     private double drop = 0;
     private bool hasCalculated = false;
 
@@ -58,14 +58,14 @@ private void Calculate()
     drop = pipeLength * slopeDecimal;
     
     // Calculate ending invert
-    // For downhill (negative slope): ending invert decreases
-    // For uphill (positive slope): ending invert increases
-    endingInvert = startingInvert + drop;
-    
+    // For downhill (negative slope): ending elevation decreases
+    // For uphill (positive slope): ending elevation increases
+    endingElevation = startingElevation + drop;
+
     // Show the results
     hasCalculated = true;
     
     // Debug line - check the terminal/console
-    Console.WriteLine($"Calculated! Ending: {endingInvert}, Drop: {drop}");
+    Console.WriteLine($"Calculated! Ending: {endingElevation}, Drop: {drop}");
 }
 }
