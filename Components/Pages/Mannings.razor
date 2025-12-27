@@ -5,3 +5,59 @@
 <PageTitle>Manning's Equation</PageTitle>
 
 <h1>Manning's Equation</h1>
+
+<p>Calculate the maximum flow rate of a cylindrical pipe using this simplified Manning's equation.</p>
+<p>Flow rate (Q) = (1.49 / n) * A * R^(2/3) * S^(1/2)</p>
+
+<div class="card p-3 mb-3" style="max-width: 600px;">
+    <div class="mb-3">
+        <label class="form-label">Pipe Diameter (ft):</label>
+        <input type="number" class="form-control" @bind="pipeDiameter" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Slope (ft/ft):</label>
+        <input type="number" class="form-control" @bind="slope" step="0.0001" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Manning's n:</label>
+        <input type="number" class="form-control" @bind="manningsN" step="0.001" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="Calculate">Calculate</button>
+</div>
+
+@if (hasCalculated)
+{
+    <div class="alert alert-success" style="max-width: 600px;">
+        <h4>Result:</h4>
+        <p><strong>Flow Rate (Q): @flowRate.ToString("F2") CFS</strong></p>
+    </div>
+}
+
+@code {
+    // Input variables
+    private double pipeDiameter = 1.0; // in feet
+    private double slope = 0.01; // in ft/ft
+    private double manningsN = 0.013; // dimensionless
+
+    // Output variable
+    private double flowRate = 0.0; // in cubic feet per second
+    private bool hasCalculated = false;
+
+private void Calculate()
+{
+    // Calculate cross-sectional area (A) for a full circular pipe
+    double radius = pipeDiameter / 2.0;
+    double area = Math.PI * Math.Pow(radius, 2);
+
+    // Calculate hydraulic radius (R) for a full circular pipe
+    double hydraulicRadius = radius / 2.0;
+
+    // Apply Manning's equation
+    flowRate = (1.49 / manningsN) * area * Math.Pow(hydraulicRadius, 2.0 / 3.0) * Math.Sqrt(slope);
+
+    hasCalculated = true;
+}
+}
