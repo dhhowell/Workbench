@@ -10,19 +10,33 @@
 <p>Flow rate (Q) = (1.49 / n) * A * R^(2/3) * S^(1/2)</p>
 
 <div class="card p-3 mb-3" style="max-width: 600px;">
+    
+    <!-- PIPE DIAMETER DROPDOWN -->
     <div class="mb-3">
-        <label class="form-label">Pipe Diameter (ft):</label>
-        <input type="number" class="form-control" @bind="pipeDiameter" step="0.01" />
+        <label class="form-label">Pipe Diameter:</label>
+        <select class="form-select" @bind="selectedPipeDiameter">
+            @foreach (var size in pipeSizes)
+            {
+                <option value="@size">@size inch</option>
+            }
+        </select>
     </div>
 
+    <!-- SLOPE INPUT - NOW AS PERCENTAGE -->
     <div class="mb-3">
-        <label class="form-label">Slope (ft/ft):</label>
-        <input type="number" class="form-control" @bind="slope" step="0.0001" />
+        <label class="form-label">Slope (%):</label>
+        <input type="number" class="form-control" @bind="slope" step="0.01" />
     </div>
 
+    <!-- PIPE MATERIAL DROPDOWN -->
     <div class="mb-3">
-        <label class="form-label">Manning's n:</label>
-        <input type="number" class="form-control" @bind="manningsN" step="0.001" />
+        <label class="form-label">Pipe Material:</label>
+        <select class="form-select" @bind="selectedMaterialName">
+            @foreach (var material in pipeMaterials)
+            {
+                <option value="@material.Name">@material.Name (n=@material.NValue.ToString("F3"))</option>
+            }
+        </select>
     </div>
 
     <button class="btn btn-primary" @onclick="Calculate">Calculate</button>
@@ -37,27 +51,79 @@
 }
 
 @code {
-    // Input variables
-    private double pipeDiameter = 1.0; // in feet
-    private double slope = 0.01; // in ft/ft
-    private double manningsN = 0.013; // dimensionless
+    // ===== PIPE SIZES LIST =====
+    // This list holds all available pipe diameters in INCHES
+    private List<double> pipeSizes = new List<double> 
+    { 
+        4, 6, 8, 10, 12, 15, 18, 21, 24, 27, 30, 33, 36, 42, 48, 54, 60 
+    };
+    
+    // This stores the user's selected pipe diameter (in inches)
+    private double selectedPipeDiameter = 12; // Default to 12"
 
-    // Output variable
+    // ===== PIPE MATERIALS CLASS =====
+    // This class groups material name and n-value together
+    public class PipeMaterial
+    {
+        public string Name { get; set; } = "";
+        public double NValue { get; set; }
+    }
+
+    // ===== PIPE MATERIALS LIST =====
+    // This list holds all available pipe materials with their n-values
+    private List<PipeMaterial> pipeMaterials = new List<PipeMaterial>
+    {
+        new PipeMaterial { Name = "RCP", NValue = 0.013 },    // Reinforced Concrete Pipe
+        new PipeMaterial { Name = "HDPE", NValue = 0.009 },   // High-Density Polyethylene
+        new PipeMaterial { Name = "PVC", NValue = 0.009 },    // Polyvinyl Chloride
+        new PipeMaterial { Name = "CMP", NValue = 0.024 }     // Corrugated Metal Pipe
+    };
+
+    // This stores the name of the selected material
+    private string selectedMaterialName = "RCP"; // Default to RCP
+
+    // ===== OTHER INPUT VARIABLES =====
+    private double slope = 1.0; // in PERCENT (changed from ft/ft)
+
+    // ===== OUTPUT VARIABLES =====
     private double flowRate = 0.0; // in cubic feet per second
     private bool hasCalculated = false;
 
-private void Calculate()
-{
-    // Calculate cross-sectional area (A) for a full circular pipe
-    double radius = pipeDiameter / 2.0;
-    double area = Math.PI * Math.Pow(radius, 2);
+    // ===== HELPER METHOD =====
+    // This finds and returns the n-value for the currently selected material
+    private double GetSelectedNValue()
+    {
+        // Search through the pipeMaterials list to find the matching material
+        var material = pipeMaterials.FirstOrDefault(m => m.Name == selectedMaterialName);
+        
+        // Return the n-value (or 0.013 if somehow nothing is found)
+        return material?.NValue ?? 0.013;
+    }
 
-    // Calculate hydraulic radius (R) for a full circular pipe
-    double hydraulicRadius = radius / 2.0;
+    // ===== CALCULATION METHOD =====
+    private void Calculate()
+    {
+        // Convert pipe diameter from INCHES to FEET
+        double pipeDiameterFeet = selectedPipeDiameter / 12.0;
+        
+        // Get the n-value for the selected material
+        double manningsN = GetSelectedNValue();
 
-    // Apply Manning's equation
-    flowRate = (1.49 / manningsN) * area * Math.Pow(hydraulicRadius, 2.0 / 3.0) * Math.Sqrt(slope);
+        // Convert slope from PERCENTAGE to DECIMAL (ft/ft)
+        // Example: 2% becomes 0.02
+        double slopeDecimal = slope / 100.0;
 
-    hasCalculated = true;
-}
+        // Calculate cross-sectional area (A) for a full circular pipe
+        double radius = pipeDiameterFeet / 2.0;
+        double area = Math.PI * Math.Pow(radius, 2);
+
+        // Calculate hydraulic radius (R) for a full circular pipe
+        // For a full circle: R = D/4
+        double hydraulicRadius = pipeDiameterFeet / 4.0;
+
+        // Apply Manning's equation using the decimal slope
+        flowRate = (1.49 / manningsN) * area * Math.Pow(hydraulicRadius, 2.0 / 3.0) * Math.Sqrt(slopeDecimal);
+
+        hasCalculated = true;
+    }
 }
